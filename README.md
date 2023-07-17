@@ -5,3 +5,7 @@ This is a repo for my workflow. It contains my dotfiles, scripts, and other thin
 ## Powershell
 
 In my powershell file I have a few aliases and functions to make some things in a much simpler way. They are related to git, navigation, opening files, and other things.
+
+## AHK
+
+I use AHK to add super capability to my keyboard. Like media control, searching google, and opening pre-assigned programs.
