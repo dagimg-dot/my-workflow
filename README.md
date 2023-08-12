@@ -9,3 +9,6 @@ In my powershell file I have a few aliases and functions to make some things in 
 ## AHK
 
 I use AHK to add super capability to my keyboard. Like media control, searching google, and opening pre-assigned programs.
+
+1. **Simple-Scripts**  consists of simple scripts like media keys, volume controls, alwaysontop capability for every app
+2. **Capslock-Remap** consists of a lot of remaps based on the Capslock key because we do not use capslock as much, so make it more useful using AHK.
