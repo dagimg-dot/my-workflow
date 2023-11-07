@@ -1,6 +1,6 @@
 # My Workflow
 
-This is a repo for my workflow. It contains my dotfiles, scripts, and other things I use to make my life easier as a day-to-day PC user.
+This is a repo for my workflow. It contains my dotfiles, scripts, and other things I use to make my life easier as a day-to-day PC user. You will absolutely love it.
 
 ## Powershell
 
