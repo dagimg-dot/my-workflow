@@ -83,6 +83,15 @@ function RefreshCache {
     Write-Host "Cache updated successfully 🎇"
 }
 
+# an alias to the 'git switch' command, since I am using it more recently
+function gs{
+  param(
+    [string]$Command
+  )
+
+  Invoke-Expression "git switch $Command"
+}
+
 # change to the directory you want to go to using fd and fzf
 function fk {Set-Location (fd --type d --exclude node_modules --exclude Lib | fzf  --no-multi)}
 
