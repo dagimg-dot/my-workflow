@@ -85,10 +85,50 @@ function touch {
 }
 
 # alias to open to open a directory in vs code
+# function fj {
+#     $selected_directory=$(fd --type d --exclude node_modules --exclude Lib | fzf --exit-0)
+#     if ([string]::IsNullOrEmpty($selected_directory) -eq $false) {
+#         & "code" "$selected_directory"
+#     }
+# }
+
+# alias to open a directory in vs code and add an option to open the 10 most recent opened projects only
 function fj {
-    $selected_directory=$(fd --type d --exclude node_modules --exclude Lib | fzf --exit-0)
-    if ([string]::IsNullOrEmpty($selected_directory) -eq $false) {
-        & "code" "$selected_directory"
+    param (
+        [switch]$Recent
+    )
+
+    $cacheFilePath = Join-Path -Path $env:TEMP -ChildPath "recent_projects.txt"
+    $recentProjects = @()
+
+    if ($Recent) {
+        if (-not (Test-Path -Path $cacheFilePath)) {
+            Write-Host "No recent projects found."
+            return
+        }
+
+        $recentProjects = Get-Content -Path $cacheFilePath
+
+        $selectedDirectory = $recentProjects | Select-Object -First 10 | fzf
+
+        if ($selectedDirectory) {
+            & "code" "$selectedDirectory"
+        }
+    }
+    else {
+        $selectedDirectory = $(fd --type d --exclude node_modules --exclude Lib | fzf --exit-0)
+
+        if ([string]::IsNullOrEmpty($selectedDirectory) -eq $false) {
+            & "code" "$selectedDirectory"
+
+            # Add the selected directory to the recent projects list
+            $recentProjects = $recentProjects | Where-Object { $_ -ne $selectedDirectory }
+            $recentProjects = $selectedDirectory + $recentProjects
+            $recentProjects = $recentProjects | Select-Object -First 10
+
+            # Save the recent projects list to the cache file
+            $recentProjects | Out-File -FilePath $cacheFilePath -Append
+        }
     }
 }
 
