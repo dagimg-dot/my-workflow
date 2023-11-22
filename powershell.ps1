@@ -39,6 +39,50 @@ function f {
 # see file contents in the terminal with syntax highlighting using fd, bat and fzf
 function ff {fd --type f --exclude node_modules --exclude Lib | fzf  --preview 'bat --style=numbers --color=always {}' --preview-window=right:60%}
 
+# alias to cache all the Node Packages I have installed in my machine and list them with a refresh option
+function fn {
+    param (
+        [string]$Command
+    )
+    $ProjectsDirectory = "D:/Projects/JAVASCRIPT"
+    $cacheFilePath = Join-Path -Path $env:TEMP -ChildPath "cached_directories.txt"
+
+    if($Command -eq "--uc") {
+        RefreshCache
+    }
+
+    # Check if the cached directory list exists
+    if (-not (Test-Path -Path $cacheFilePath)) {
+        # If the cached directory list doesn't exist, create it
+        return
+    }
+
+    # Read the cached directory list
+    $cachedDirectories = Get-Content -Path $cacheFilePath
+
+    $selectedDirectory = $cachedDirectories | fzf
+
+    if ($selectedDirectory) {
+        $parentDirectory = Split-Path -Path $selectedDirectory -Parent
+        $PparentDirectory = Split-Path -Path $parentDirectory -Parent
+        Set-Location -Path $parentDirectory
+        Write-Host "You are in $PparentDirectory project location"
+    }
+}
+
+function RefreshCache {
+    $ProjectsDirectory = @("D:/Projects/JAVASCRIPT", "D:/Self-Dev/NodeModules", "D:/Projects/Docker")
+    $cacheFilePath = Join-Path -Path $env:TEMP -ChildPath "cached_directories.txt"
+
+    $allDirectories = foreach ($directory in $ProjectsDirectory) {
+        Get-ChildItem -Path $directory -Filter "node_modules" -Recurse -Directory | Get-ChildItem -Directory | Select-Object -ExpandProperty FullName -Unique
+    }
+
+    # Generate the directory list and save it to the cache file
+    $allDirectories | Out-File -FilePath $cacheFilePath
+    Write-Host "Cache updated successfully 🎇"
+}
+
 # change to the directory you want to go to using fd and fzf
 function fk {Set-Location (fd --type d --exclude node_modules --exclude Lib | fzf  --no-multi)}
 
