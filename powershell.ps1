@@ -154,15 +154,23 @@ function fj {
     $cacheFilePath = Join-Path -Path $env:TEMP -ChildPath "recent_projects.txt"
     $recentProjects = @()
 
+    if (-not (Test-Path -Path $cacheFilePath)) {
+        Write-Host "No recent projects found."
+        return
+    }
+
+    $recentProjects = Get-Content -Path $cacheFilePath
+
     if ($Recent) {
-        if (-not (Test-Path -Path $cacheFilePath)) {
-            Write-Host "No recent projects found."
+
+        if($recentProjects.Length -eq 0) {
+            Write-Host "You have 0 recent projects"
             return
         }
 
-        $recentProjects = Get-Content -Path $cacheFilePath
+        $recentProjectsRev = $recentProjects[($recentProjects.Length-1)..0]
 
-        $selectedDirectory = $recentProjects | Select-Object -First 10 | fzf
+        $selectedDirectory = $recentProjectsRev | Select-Object -First 10 | fzf
 
         if ($selectedDirectory) {
             & "code" "$selectedDirectory"
@@ -174,13 +182,17 @@ function fj {
         if ([string]::IsNullOrEmpty($selectedDirectory) -eq $false) {
             & "code" "$selectedDirectory"
 
-            # Add the selected directory to the recent projects list
-            $recentProjects = $recentProjects | Where-Object { $_ -ne $selectedDirectory }
-            $recentProjects = $selectedDirectory + $recentProjects
-            $recentProjects = $recentProjects | Select-Object -First 10
+            $found = $recentProjects | Where-Object { $_ -eq $selectedDirectory }
 
-            # Save the recent projects list to the cache file
-            $recentProjects | Out-File -FilePath $cacheFilePath -Append
+            # Add the selected directory to the recent projects list if the selected directory is not found else make the selected directory the last entry
+            if([string]::IsNullOrEmpty($found)) {
+                $selectedDirectory | Out-File -FilePath $cacheFilePath -Append
+            } else {
+                $recentProjects = $recentProjects | Where-Object {$_ -ne $selectedDirectory}
+                $recentProjects += $selectedDirectory
+                $recentProjects | Out-File -FilePath $cacheFilePath
+            }
+
         }
     }
 }
