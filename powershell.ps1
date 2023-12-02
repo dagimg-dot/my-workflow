@@ -44,7 +44,7 @@ function fn {
     param (
         [string]$Command
     )
-    $ProjectsDirectory = "D:/Projects/JAVASCRIPT"
+    
     $cacheFilePath = Join-Path -Path $env:TEMP -ChildPath "cached_directories.txt"
 
     if($Command -eq "--uc") {
